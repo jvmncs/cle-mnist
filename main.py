@@ -1,7 +1,6 @@
 from __future__ import print_function
 import argparse
 import numpy as np
-from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -15,8 +14,9 @@ from model import Softmax, TwoLayer, ConvNet
 
 def main(args):
     # reproducibility
-    torch.manual_seed(args.seed)
-    np.random.seed(args.seed)
+    if args.seed is not None:
+        torch.manual_seed(args.seed)
+        np.random.seed(args.seed)
 
     # decide which device to use; assumes at most one GPU is available
     args.use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -124,7 +124,7 @@ if __name__=='__main__':
                         help='learning rate (default: 0.001; ignored if model is `linear`)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
-    parser.add_argument('--seed', type=int, default=1, metavar='S',
+    parser.add_argument('--seed', type=int, default=None, metavar='S',
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status (default: 200)')

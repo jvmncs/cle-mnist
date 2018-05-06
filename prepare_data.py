@@ -69,8 +69,8 @@ def prepare_data(args):
 
 def process_csv(root='./data/'):
     for pickle_file in ['train.npy', 'test.npy']:
-        if os.path.isfile(os.path.join(root, pickle_file)):
+        if os.path.isfile(root+pickle_file):
             continue
         else:
-            loaded = np.loadtxt(os.path.join(root, pickle_file[:-4], '.csv'), delimiter=',', skiprows=1)
-            np.save(pickle_file, loaded)
+            loaded = np.loadtxt(root + pickle_file[:-4] + '.csv', delimiter=',', skiprows=1)
+            np.save(root + pickle_file, loaded)
