@@ -1,7 +1,8 @@
 from __future__ import print_function
+import os
 from datetime import datetime
-
 import argparse
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -12,7 +13,7 @@ from torchvision import datasets, transforms
 
 from prepare_data import prepare_data
 from model import Softmax, TwoLayer, ConvNet
-from utilities import save_checkpoint, mkdir
+from utilities import save_checkpoint, mkdir_p
 
 
 def main(args):
@@ -22,7 +23,7 @@ def main(args):
         np.random.seed(args.seed)
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
-    checkpoint_file = args.checkpoint + args.model + datetime.now()[:-10]
+    checkpoint_file = args.checkpoint + args.model + str(datetime.now())[:-10]
 
     # decide which device to use; assumes at most one GPU is available
     args.use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -93,8 +94,8 @@ def main(args):
             state = {
                 'epoch': epoch,
                 'model': args.model,
-                'state_dict': model.state_dict()
-                'optimizer_state': optimizer.state_dict()
+                'state_dict': model.state_dict(),
+                'optimizer_state': optimizer.state_dict(),
                 'val_loss': val_loss,
                 'best_val_loss': best_val_loss,
                 'val_acc': val_acc,
