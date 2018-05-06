@@ -2,7 +2,7 @@
 =====
 _A clean MNIST tutorial built with Pytorch_
 
-Created with newcomers from Cleveland, Ohio in mind.
+Created with newcomers from Cleveland, Ohio in mind.  This is an extension of the [60 Minute Blitz](https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html) from the official PyTorch tutorials including a few PyTorch extras that are important for beginners to know about.
 
 ##### Installation instructions for OS X or Linux
 1. Set up your package manager.  I suggest using conda or virtualenv.  There are many tutorials you can find online for doing so.  I'll assume you're using conda, but the installation process won't be very different using virtualenv.
@@ -22,12 +22,15 @@ Run `cd ClevelandMNIST`.  Your current working directory is now `/<root>/<path>/
 - If you have an NVIDIA graphics card with CUDA installed, select your CUDA version.  Otherwise, choose "None".
 - Copy the command(s) that show up below the interface, then execute in the same terminal process that you began above.  In particular, it's important that you've activated the `cle-mnist` environment already.
 
-6. Next, install the rest of the dependencies with the command `pip install -r requirements.txt`.
-
 You're installed!
 
-##### Training/evaluating the model
-TODO
+##### Demo training/evaluating the model
+Softmax classifier:
+`python main.py --model linear`
+Two-layer neural network
+`python main.py --model neuralnet`
+Convolutional network
+`python main.py --model convnet`
 
 ##### Generating predictions and Kaggle submission
 TODO

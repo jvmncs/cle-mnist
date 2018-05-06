@@ -1,4 +1,6 @@
 from __future__ import print_function
+from datetime import datetime
+
 import argparse
 import numpy as np
 import torch
@@ -10,6 +12,7 @@ from torchvision import datasets, transforms
 
 from prepare_data import prepare_data
 from model import Softmax, TwoLayer, ConvNet
+from utilities import save_checkpoint, mkdir
 
 
 def main(args):
@@ -17,6 +20,9 @@ def main(args):
     if args.seed is not None:
         torch.manual_seed(args.seed)
         np.random.seed(args.seed)
+    if not os.path.isdir(args.checkpoint):
+        mkdir_p(args.checkpoint)
+    checkpoint_file = args.checkpoint + args.model + datetime.now()[:-10]
 
     # decide which device to use; assumes at most one GPU is available
     args.use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -42,7 +48,6 @@ def main(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, amsgrad=True)
 
     for epoch in range(args.epochs):
-        # training
         print('\n================== TRAINING ==================')
         model.train()
         correct = 0
@@ -55,18 +60,19 @@ def main(args):
             loss.backward()
             optimizer.step()
             pred = output.max(1, keepdim=True)[1] # get the index of the max logit
-            correct += pred.eq(label.view_as(pred)).sum().item()
+            correct += pred.eq(label.view_as(pred)).sum().item() # add to running total of hits
             if ix % args.log_interval == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, (ix + 1) * len(img), train_num,
                     100. * ix / len(train_loader), loss.item()))
-        print('Train Accuracy: {}/{} ({:.0f}%)\n'.format(correct, train_num, 100. * correct / train_num))
+        print('Train Accuracy: {}/{} ({:.0f}%)\n'.format(
+            correct, train_num, 100. * correct / train_num))
 
-        # evaluation
         if evaluate:
             print('\n================== VALIDATION ==================')
             model.eval()
             val_loss = 0.
+            best_val_loss = float('inf')
             val_correct = 0
             val_num = int(len(val_loader.dataset) * (1 - args.test_split) * (1 - args.train_split))
             with torch.no_grad():
@@ -75,13 +81,30 @@ def main(args):
                     output = model(img)
                     val_loss += F.cross_entropy(output, label, size_average=False).item() # sum up batch loss
                     pred = output.max(1, keepdim=True)[1] # get the index of the max logit
-                    val_correct += pred.eq(label.view_as(pred)).sum().item()
+                    val_correct += pred.eq(label.view_as(pred)).sum().item() # add to running total of hits
 
             val_loss /= val_num
 
+            is_best = val_acc < best_val_acc
+            if is_best:
+                best_val_acc = val_acc
+                best_val_loss = val_loss # note this is val_loss of best model w.r.t. accuracy
+
+            state = {
+                'epoch': epoch,
+                'model': args.model,
+                'state_dict': model.state_dict()
+                'optimizer_state': optimizer.state_dict()
+                'val_loss': val_loss,
+                'best_val_loss': best_val_loss,
+                'val_acc': val_acc,
+                'best_val_acc': best_val_acc
+            }
+            save_checkpoint(state, checkpoint_file, is_best)
+
             print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-                val_loss, val_correct, val_num,
-                100. * val_correct / val_num))
+                val_loss, val_correct, val_num, 100. * val_correct / val_num))
+
 
     print('\n================== TESTING ==================')
     model.eval()
@@ -102,8 +125,6 @@ def main(args):
         100. * test_correct / test_num))
 
 
-
-
 if __name__=='__main__':
     # Training settings/hyperparams
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -113,7 +134,7 @@ if __name__=='__main__':
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
-                        help='input batch size for testing (default: 1000)')
+                        help='input batch size for evaluation (default: 1000)')
     parser.add_argument('--test-split', type=float, default=.2, metavar='P',
                         help='percent of training data to hold out for test set (default: .2)')
     parser.add_argument('--train-split', type=float, default=1., metavar='P',
@@ -130,6 +151,8 @@ if __name__=='__main__':
                         help='how many batches to wait before logging training status (default: 200)')
     parser.add_argument('--data-folder', type=str, default='./data/', metavar='CHAR',
                         help='root path for folder containing MNIST data download (default: ./data/)')
+    parser.add_argument('--checkpoint', type=str, default='./checkpoint/', metavar='CHAR',
+                        help='root path for folder containing model checkpoints (default: ./checkpoint/)')
     args = parser.parse_args()
 
     main(args)
