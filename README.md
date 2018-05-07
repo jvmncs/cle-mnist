@@ -32,8 +32,11 @@ You're installed!
 ##### Training for performance
 Suggested minimum training epochs:
 - linear: 30
-- neuralnet: >
+- neuralnet: 
 - convnet: 
+
+##### Suggested learning rate:
+I've gone with .001, but feel free to finetune it!  Just be sure not to overfit.
 
 ##### Generating predictions and Kaggle submission
 TODO
