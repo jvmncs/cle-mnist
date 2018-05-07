@@ -63,12 +63,14 @@ def main(args):
             loss = F.cross_entropy(output, label)
             loss.backward()
             optimizer.step()
+
             pred = output.max(1, keepdim=True)[1] # get the index of the max logit
             correct += pred.eq(label.view_as(pred)).sum().item() # add to running total of hits
             if ix % args.log_interval == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, (ix + 1) * len(img), train_num,
                     100. * ix / len(train_loader), loss.item()))
+
         print('Train Accuracy: {}/{} ({:.0f}%)\n'.format(
             correct, train_num, 100. * correct / train_num))
 
@@ -84,11 +86,14 @@ def main(args):
                     img, label = img.to(device), label.to(device)
                     output = model(img)
                     val_loss += F.cross_entropy(output, label, size_average=False).item() # sum up batch loss
+
                     pred = output.max(1, keepdim=True)[1] # get the index of the max logit
                     val_correct += pred.eq(label.view_as(pred)).sum().item() # add to running total of hits
 
             val_loss /= val_num
             val_acc = 100. * val_correct / val_num
+            print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+                val_loss, val_correct, val_num, val_acc))
 
             is_best = val_acc > best_val_acc
             if is_best:
@@ -106,26 +111,6 @@ def main(args):
                 'best_val_acc': best_val_acc
             }
             save_checkpoint(state, is_best, checkpoint_file)
-
-            is_best = val_acc < best_val_acc
-            if is_best:
-                best_val_acc = val_acc
-                best_val_loss = val_loss # note this is val_loss of best model w.r.t. accuracy
-
-            state = {
-                'epoch': epoch,
-                'model': args.model,
-                'state_dict': model.state_dict(),
-                'optimizer_state': optimizer.state_dict(),
-                'val_loss': val_loss,
-                'best_val_loss': best_val_loss,
-                'val_acc': val_acc,
-                'best_val_acc': best_val_acc
-            }
-            save_checkpoint(state, checkpoint_file, is_best)
-
-            print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-                val_loss, val_correct, val_num, val_acc))
 
     print('\n================== TESTING ==================')
     check = torch.load(checkpoint_file + '-best.pth.tar')
@@ -146,6 +131,7 @@ def main(args):
     print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, test_correct, test_num,
         100. * test_correct / test_num))
+
     print('Final model stored at "{}".'.format(checkpoint_file + '-best.pth.tar'))
 
 
