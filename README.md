@@ -32,11 +32,13 @@ You're installed!
 ##### Training for performance
 Suggested minimum training epochs:
 - linear: 30
-- neuralnet: 
-- convnet: 
+- neuralnet: 60
+- convnet: 60
 
 ##### Suggested learning rate:
-I've gone with .001, but feel free to finetune it!  Just be sure not to overfit.
+I've gone with .001, but feel free to tune it more!  Just be sure not to overfit.
 
-##### Generating predictions and Kaggle submission
+I've also neglected to tune the convolutional network architecture, mainly because I'm planning on using it to reproduce a recent paper ([https](https://blog.openai.com/debate/)).  If you're interested in tuning it, I suggest doing more to prevent overfitting, perhaps by adding dropout or batch normalization to the convolutional layers.
+
+##### Generating Kaggle submission
 TODO
