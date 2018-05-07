@@ -48,6 +48,9 @@ def main(args):
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, amsgrad=True)
 
+
+    best_val_loss = float('inf')
+    best_val_acc = 0
     for epoch in range(args.epochs):
         print('\n================== TRAINING ==================')
         model.train()
@@ -73,7 +76,6 @@ def main(args):
             print('\n================== VALIDATION ==================')
             model.eval()
             val_loss = 0.
-            best_val_loss = float('inf')
             val_correct = 0
             val_num = int(len(val_loader.dataset) * (1 - args.test_split) * (1 - args.train_split))
             with torch.no_grad():
@@ -85,8 +87,10 @@ def main(args):
                     val_correct += pred.eq(label.view_as(pred)).sum().item() # add to running total of hits
 
             val_loss /= val_num
+            val_acc = 100. * val_correct / val_num
 
-            is_best = val_acc < best_val_acc
+            is_best = val_acc > best_val_acc
+            print(val_acc, best_val_acc, is_best)
             if is_best:
                 best_val_acc = val_acc
                 best_val_loss = val_loss # note this is val_loss of best model w.r.t. accuracy
@@ -101,13 +105,15 @@ def main(args):
                 'val_acc': val_acc,
                 'best_val_acc': best_val_acc
             }
-            save_checkpoint(state, checkpoint_file, is_best)
+            save_checkpoint(state, is_best, checkpoint_file)
 
             print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-                val_loss, val_correct, val_num, 100. * val_correct / val_num))
+                val_loss, val_correct, val_num, val_acc))
 
 
     print('\n================== TESTING ==================')
+    check = torch.load(checkpoint_file + '-best.pth.tar')
+    model.load_state_dict(check['state_dict'])
     model.eval()
     test_loss = 0.
     test_correct = 0
@@ -124,6 +130,7 @@ def main(args):
     print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, test_correct, test_num,
         100. * test_correct / test_num))
+    print('Final model stored at "{}".'.format(checkpoint_file + '-best.pth.tar'))
 
 
 if __name__=='__main__':
@@ -138,8 +145,8 @@ if __name__=='__main__':
                         help='input batch size for evaluation (default: 1000)')
     parser.add_argument('--test-split', type=float, default=.2, metavar='P',
                         help='percent of training data to hold out for test set (default: .2)')
-    parser.add_argument('--train-split', type=float, default=1., metavar='P',
-                        help='percent of non-test data to use for training (default: 1.)')
+    parser.add_argument('--train-split', type=float, default=.8, metavar='P',
+                        help='percent of non-test data to use for training (default: .8)')
     parser.add_argument('--epochs', type=int, default=10, metavar='N',
                         help='number of epochs to train (default: 10; ignored if model is `linear`)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
