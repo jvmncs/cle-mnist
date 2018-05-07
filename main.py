@@ -76,6 +76,7 @@ def main(args):
             print('\n================== VALIDATION ==================')
             model.eval()
             val_loss = 0.
+            best_val_loss = float('inf')
             val_correct = 0
             val_num = int(len(val_loader.dataset) * (1 - args.test_split) * (1 - args.train_split))
             with torch.no_grad():
@@ -106,9 +107,25 @@ def main(args):
             }
             save_checkpoint(state, is_best, checkpoint_file)
 
+            is_best = val_acc < best_val_acc
+            if is_best:
+                best_val_acc = val_acc
+                best_val_loss = val_loss # note this is val_loss of best model w.r.t. accuracy
+
+            state = {
+                'epoch': epoch,
+                'model': args.model,
+                'state_dict': model.state_dict(),
+                'optimizer_state': optimizer.state_dict(),
+                'val_loss': val_loss,
+                'best_val_loss': best_val_loss,
+                'val_acc': val_acc,
+                'best_val_acc': best_val_acc
+            }
+            save_checkpoint(state, checkpoint_file, is_best)
+
             print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
                 val_loss, val_correct, val_num, val_acc))
-
 
     print('\n================== TESTING ==================')
     check = torch.load(checkpoint_file + '-best.pth.tar')
