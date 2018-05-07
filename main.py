@@ -90,7 +90,6 @@ def main(args):
             val_acc = 100. * val_correct / val_num
 
             is_best = val_acc > best_val_acc
-            print(val_acc, best_val_acc, is_best)
             if is_best:
                 best_val_acc = val_acc
                 best_val_loss = val_loss # note this is val_loss of best model w.r.t. accuracy
