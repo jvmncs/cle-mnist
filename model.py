@@ -12,7 +12,7 @@ class Softmax(nn.Module):
 
 class TwoLayer(nn.Module):
     """Feedforward neural network with one hidden layer"""
-    def __init__(self, hidden=800, dropout=None):
+    def __init__(self, hidden=800, dropout=.4):
         super().__init__()
         self.hidden = nn.Linear(784, hidden)
         self.out = nn.Linear(hidden, 10)
