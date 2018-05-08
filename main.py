@@ -135,9 +135,10 @@ def main(args):
     print('Final model stored at "{}".'.format(checkpoint_file + '-best.pth.tar'))
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
+    # parses arguments when running from terminal/command line
+    parser = argparse.ArgumentParser(description='PyTorch MNIST Example Training')
     # Training settings/hyperparams
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
     parser.add_argument('--model', type=str, choices=['linear', 'neuralnet', 'convnet'],
                         required=True, metavar='CHAR',
                         help='what kind of model to train (required)')
@@ -159,9 +160,9 @@ if __name__=='__main__':
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status (default: 200)')
-    parser.add_argument('--data-folder', type=str, default='./data/', metavar='CHAR',
+    parser.add_argument('--data-folder', type=str, default='./data/', metavar='PATH',
                         help='root path for folder containing MNIST data download (default: ./data/)')
-    parser.add_argument('--checkpoint', type=str, default='./checkpoint/', metavar='CHAR',
+    parser.add_argument('--checkpoint', type=str, default='./checkpoint/', metavar='PATH',
                         help='root path for folder containing model checkpoints (default: ./checkpoint/)')
     args = parser.parse_args()
 

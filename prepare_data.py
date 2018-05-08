@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from torchvision import datasets, transforms
 
@@ -19,8 +19,13 @@ class KaggleMNIST(Dataset):
         return len(self._data)
     
     def __getitem__(self, ix):
-        img = torch.from_numpy(self._data[ix, 1:]).type(torch.float32).view(1, 28, 28)
-        label = torch.tensor(self._data[ix, 0], dtype=torch.int64) if self._train else None
+        if self._train:
+            feats = self._data[ix, 1:]
+            label = torch.tensor(self._data[ix, 0], dtype=torch.int64)
+        else:
+            feats = self._data[ix, :]
+            label = -1
+        img = torch.from_numpy(feats).type(torch.float32).view(1, 28, 28)
         if self._transform is not None:
             img = self._transform(img)
         return img.view(28 * 28), label
@@ -55,14 +60,11 @@ def prepare_data(args):
     test_sampler = SubsetRandomSampler(test_ix)
 
     kwargs = {'num_workers': 2, 'pin_memory': True} if args.use_cuda else {}
-    train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.batch_size,
+    train_loader = DataLoader(train_set, batch_size=args.batch_size,
         sampler=train_sampler, **kwargs)
-    val_loader = torch.utils.data.DataLoader(
-        val_set, batch_size=args.test_batch_size,
+    val_loader = DataLoader(val_set, batch_size=args.test_batch_size,
         sampler=val_sampler, **kwargs) if val_ix is not None else None
-    test_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.test_batch_size,
+    test_loader = DataLoader(train_set, batch_size=args.test_batch_size,
         sampler=test_sampler, **kwargs)
 
     return train_loader, val_loader, test_loader
