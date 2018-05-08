@@ -44,6 +44,6 @@ Assuming I have a trained model, and it's located at `./path/to/checkpoint/from/
 1. Choose a filename for your submission file.  I'll go with `kaggle_submission`.
 2. Make sure you're in the root directory of this repo (cle-mnist, located wherever you cloned it in step (2) of the installation instructions).
 3. Run `python make_submission.py --checkpoint ./path/to/checkpoint/from/root --submission-name kaggle_submission.csv`.
-4. Your submission file will be located at `cle-mnist/data/kaggle_submission.csv`.
+4. Your submission file will be located at `cle-mnist/data/kaggle_submission`.
 
 You can now navigate to the competition homepage and follow the directions to submit your predictions.  Congrats on your first Kaggle submission!
