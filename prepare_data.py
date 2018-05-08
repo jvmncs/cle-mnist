@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from torchvision import datasets, transforms
 
@@ -55,14 +55,11 @@ def prepare_data(args):
     test_sampler = SubsetRandomSampler(test_ix)
 
     kwargs = {'num_workers': 2, 'pin_memory': True} if args.use_cuda else {}
-    train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.batch_size,
+    train_loader = DataLoader(train_set, batch_size=args.batch_size,
         sampler=train_sampler, **kwargs)
-    val_loader = torch.utils.data.DataLoader(
-        val_set, batch_size=args.test_batch_size,
+    val_loader = DataLoader(val_set, batch_size=args.test_batch_size,
         sampler=val_sampler, **kwargs) if val_ix is not None else None
-    test_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.test_batch_size,
+    test_loader = DataLoader(train_set, batch_size=args.test_batch_size,
         sampler=test_sampler, **kwargs)
 
     return train_loader, val_loader, test_loader

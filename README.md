@@ -7,9 +7,8 @@ Created with newcomers from Cleveland, Ohio in mind.  This is an extension of th
 ##### Installation instructions for OS X or Linux
 1. Set up your package manager.  I suggest using conda or virtualenv.  There are many tutorials you can find online for doing so.  I'll assume you're using conda, but the installation process won't be very different using virtualenv.
 
-2. Open up a Terminal, and note your current working directory by executing `echo $PWD`.  Let's assume this printed out a filepath `/<root>/<path>`.
-Run `git clone https://github.com/jvmancuso/ClevelandMNIST.git`.
-Run `cd ClevelandMNIST`.  Your current working directory is now `/<root>/<path>/ClevelandMNIST`.
+2. Open up a Terminal, and take note of your current working directory by executing `echo $PWD`.  Let's assume this printed out a filepath `/<root>/<path>`.
+Execute `git clone https://github.com/jvmancuso/cle-mnist.git` in the terminal, then execute `cd cle-mnist`.  Your current working directory is now `/<root>/<path>/cle-mnist`.
 
 3. Create your conda environment.  I'll call mine "cle-mnist", so I'll execute the command `conda create -y -n cle-mnist python=3.6`.
 
@@ -30,15 +29,18 @@ You're installed!
 - Convolutional network: `python main.py --model convnet`
 
 ##### Training for performance
+To see all customizable arguments, execute `python main.py -h`.<br>
 Suggested minimum training epochs:
 - linear: 30
 - neuralnet: 60
 - convnet: 60
 
-##### Suggested learning rate:
-I've gone with .001, but feel free to tune it more!  Just be sure not to overfit.
-
+Suggested learning rate:
+I've gone with .001, but feel free to tune it more!  Just be sure not to overfit.<br>
 I've also neglected to tune the convolutional network architecture, mainly because I'm planning on using it to reproduce a recent paper ([https](https://blog.openai.com/debate/)).  If you're interested in tuning it, I suggest doing more to prevent overfitting, perhaps by adding dropout or batch normalization to the convolutional layers.
 
 ##### Generating Kaggle submission
-TODO
+Assuming I have a trained model, and it's located at `./path/to/checkpoint/from/root`...
+1. Choose a filename for your submission file.  I'll go with `kaggle_submission.csv`.
+2. Make sure you're in the root directory of this repo (cle-mnist, located wherever you cloned it).
+3. Run `python make_submission.py
