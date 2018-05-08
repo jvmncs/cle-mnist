@@ -136,8 +136,9 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # Training settings/hyperparams
+    # parses arguments when running from terminal/command line
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example Training')
+    # Training settings/hyperparams
     parser.add_argument('--model', type=str, choices=['linear', 'neuralnet', 'convnet'],
                         required=True, metavar='CHAR',
                         help='what kind of model to train (required)')

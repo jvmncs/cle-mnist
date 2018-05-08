@@ -19,8 +19,13 @@ class KaggleMNIST(Dataset):
         return len(self._data)
     
     def __getitem__(self, ix):
-        img = torch.from_numpy(self._data[ix, 1:]).type(torch.float32).view(1, 28, 28)
-        label = torch.tensor(self._data[ix, 0], dtype=torch.int64) if self._train else None
+        if self._train:
+            feats = self._data[ix, 1:]
+            label = torch.tensor(self._data[ix, 0], dtype=torch.int64)
+        else:
+            feats = self._data[ix, :]
+            label = -1
+        img = torch.from_numpy(feats).type(torch.float32).view(1, 28, 28)
         if self._transform is not None:
             img = self._transform(img)
         return img.view(28 * 28), label
