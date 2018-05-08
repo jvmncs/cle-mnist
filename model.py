@@ -8,6 +8,12 @@ class Softmax(nn.Module):
         self.logits = nn.Linear(784, 10)
 
     def forward(self, x):
+        """
+        Define a forward pass through the network.
+        
+        Note: Since we're inheriting from nn.Module, this will take care of the backward
+        pass and parameter update step when we use an optimizer from `torch.optim`.
+        """
         return self.logits(x)
 
 class TwoLayer(nn.Module):
@@ -19,6 +25,12 @@ class TwoLayer(nn.Module):
         self.dropout = nn.Dropout(dropout) if dropout else None
 
     def forward(self, x):
+        """
+        Define a forward pass through the network.
+        
+        Note: Since we're inheriting from nn.Module, this will take care of the backward
+        pass and parameter update step when we use an optimizer from `torch.optim`.
+        """
         if self.dropout:
             x = self.dropout(x)
         x = nn.functional.relu(self.hidden(x))
@@ -30,6 +42,8 @@ class ConvNet(nn.Module):
     """
     ConvNet from TensorFlow CNN MNIST tutorial
     (see: https://www.tensorflow.org/tutorials/layers#building_the_cnn_mnist_classifier)
+
+    Reproduced, not optmized.
     """
     def __init__(self):
         super().__init__()
@@ -41,6 +55,7 @@ class ConvNet(nn.Module):
 
     @classmethod
     def conv_block(cls, in_channels, out_channels):
+        """A single convolutional block"""
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=5),
             nn.ReLU(),
@@ -49,6 +64,7 @@ class ConvNet(nn.Module):
 
     @classmethod
     def flatten(cls, x):
+        """Flattens the input x to a 2d tensor"""
         size = x.size()[1:]  # all dimensions except the batch dimension
         num_features = 1
         for s in size:
@@ -56,6 +72,12 @@ class ConvNet(nn.Module):
         return x.view(-1, num_features)
 
     def forward(self, x):
+        """
+        Define a forward pass through the network.
+        
+        Note: Since we're inheriting from nn.Module, this will take care of the backward
+        pass and parameter update step when we use an optimizer from `torch.optim`.
+        """
         # make each image 3d for compatibility with convolutional blocks
         x = x.view(-1, 1, 28, 28)
         x = self.block1(x)
