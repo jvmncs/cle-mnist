@@ -175,16 +175,15 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
-                        help='input batch size for evaluation (default: 1000)')
+                        help='input batch size for evaluation (default: 1,000)')
     parser.add_argument('--test-split', type=float, default=.2, metavar='P',
                         help='percent of training data to hold out for test set (default: .2)')
     parser.add_argument('--train-split', type=float, default=.8, metavar='P',
                         help='percent of non-test data to use for training (default: .8)')
-    parser.add_argument('--epochs', type=int, default=10, metavar='N',
-                        help='number of epochs to train \
-                        (default: 10; ignored if model is `linear`)')
+    parser.add_argument('--epochs', type=int, default=60, metavar='N',
+                        help='number of epochs to train (default: 60)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
-                        help='learning rate (default: 0.001; ignored if model is `linear`)')
+                        help='learning rate (default: 0.001)')
     parser.add_argument('--no-amsgrad', action='store_true', default=False,
                         help='don\'t use amsgrad in Adam; needed for later work with safety \
                         debates paper')
@@ -194,7 +193,7 @@ if __name__ == '__main__':
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status \
-                        (default: 200)')
+                        (default: 10)')
     parser.add_argument('--data-folder', type=str, default='./data/', metavar='PATH',
                         help='root path for folder containing MNIST data download \
                         (default: ./data/)')
