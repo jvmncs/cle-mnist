@@ -63,7 +63,7 @@ def main(args):
 
         # set up training metrics we want to track
         correct = 0
-        train_num = int(len(train_loader.dataset) * (1 - args.test_split) * args.train_split)
+        train_num = len(train_loader.sampler)
 
         for ix, (img, label) in enumerate(train_loader): # iterate over training batches
             img, label = img.to(device), label.to(device) # get data, send to gpu if needed
@@ -92,7 +92,7 @@ def main(args):
             # set up validation metrics we want to track
             val_loss = 0.
             val_correct = 0
-            val_num = int(len(val_loader.dataset) * (1 - args.test_split) * (1 - args.train_split))
+            val_num = len(val_loader.sampler)
 
             # disable autograd here (replaces volatile flag from v0.3.1 and earlier)
             with torch.no_grad():
@@ -145,7 +145,7 @@ def main(args):
     # set up evaluation metrics we want to track
     test_loss = 0.
     test_correct = 0
-    test_num = int(len(test_loader.dataset) * args.test_split)
+    test_num = len(test_loader.sampler)
 
     # disable autograd here (replaces volatile flag from v0.3.1 and earlier)
     with torch.no_grad():
